@@ -1,13 +1,15 @@
 {
-  outputs = { nixpkgs, self }:
-  {
-    packages.x86_64-linux = let
-      pkgs = (import nixpkgs { system = "x86_64-linux"; });
-    in {
-      zfs-util = pkgs.stdenv.mkDerivation {
-        src = ./.;
-        name = "zfs-util";
-      };
+  inputs = {
+    utils.url = "github:numtide/flake-utils";
+  };
+  outputs = { nixpkgs, self, utils }:
+  utils.lib.eachSystem [ "x86_64-linux" "i686-linux" ] (system:
+  let
+    pkgs = import nixpkgs { inherit system; };
+  in {
+    packages = {
+      zfs-fragmentation = pkgs.callPackage ./fragmentation {};
+      txg-watcher = pkgs.callPackage ./txg-watcher {};
       spacemap-exporter = pkgs.stdenv.mkDerivation {
         name = "spacemap-exporter";
         src = ./spacemap-exporter;
@@ -15,5 +17,5 @@
         nativeBuildInputs = [ pkgs.pkgconfig ];
       };
     };
-  };
+  });
 }
