@@ -29,6 +29,7 @@ static std::list<std::string> find_pools() {
       pools.push_back(dir->d_name);
     }
   }
+  closedir(dh);
   return pools;
 }
 
