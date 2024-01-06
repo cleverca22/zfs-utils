@@ -6,10 +6,25 @@
   utils.lib.eachSystem [ "x86_64-linux" "i686-linux" ] (system:
   let
     pkgs = import nixpkgs { inherit system; };
+    wrap = drv: drv // { type = "derivation"; outPath = drv.out; outputName = "out"; };
   in {
     packages = {
       zfs-fragmentation = pkgs.callPackage ./fragmentation {};
       txg-watcher = pkgs.callPackage ./txg-watcher {};
+      zfs-util = pkgs.stdenv.mkDerivation {
+        src = ./.;
+        name = "zfs-util";
+        dontStrip = true;
+      };
+      test = pkgs.runCommand "test" {} ''
+      '';
+      #test2 = wrap (builtins.derivationStrict {
+      #  name = "foo";
+      #  builder = "/bin/sh";
+      #  outputs = [ "out" "dev" ];
+      #  args = [ ./foo.sh ./flake.lock "bar" ];
+      #  system = "x86_64-linux";
+      #});
       spacemap-exporter = pkgs.stdenv.mkDerivation {
         name = "spacemap-exporter";
         src = ./spacemap-exporter;
