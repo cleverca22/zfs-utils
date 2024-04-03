@@ -39,13 +39,28 @@ static void scan_class(const string dir, const string pool, const string metacla
   if (!fh.is_open()) {
     exit(2);
   }
+
+  uint64_t buffer[64];
+  for (int i=0; i<64; i++) buffer[i] = 0;
+
   while (!fh.eof()) {
     uint64_t bits, count;
     if (fh >> bits >> count) {
+      buffer[bits] = count * (1 << bits);
       if ((histogram[bits] != count) || count) {
         fprintf(out,"zfs_fragmentation_%s{pool=\"%s\",power=\"%ld\"} %ld\n", metaclass.c_str(), pool.c_str(), bits, count);
+        //fprintf(out,"zfs_fragmentation2_%s{pool=\"%s\",le=\"%09ld\"} %ld\n", metaclass.c_str(), pool.c_str(), 1 << bits, count);
         histogram[bits] = count;
       }
+    }
+  }
+  for (int i=12; i<64; i++) {
+    uint64_t total = 0;
+    for (int j=i; j<64; j++) {
+      total += buffer[j];
+    }
+    if (total > 0) {
+      fprintf(out,"zfs_fragmentation_%s_bytes{pool=\"%s\",power=\"%ld\"} %ld\n", metaclass.c_str(), pool.c_str(), i, total);
     }
   }
 }
@@ -64,11 +79,17 @@ static void do_scan(FILE *out) {
 
 void start_server() {
   int server = socket(AF_INET, SOCK_STREAM, 0);
+  int enable = 1;
+  if (setsockopt(server, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
+    perror("cannot set SO_REUSEADDR");
+    exit(3);
+  }
   struct sockaddr_in addr;
   addr.sin_family = AF_INET;
   addr.sin_port = htons(9103);
   addr.sin_addr.s_addr = INADDR_ANY;
   if (bind(server, (sockaddr*)&addr, sizeof(addr))) {
+    perror("cant bind to port 9103");
     exit(3);
   }
   listen(server, 5);
