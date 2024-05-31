@@ -9,6 +9,7 @@
     wrap = drv: drv // { type = "derivation"; outPath = drv.out; outputName = "out"; };
   in {
     packages = {
+      gang-finder = pkgs.callPackage ./gang-finder {};
       zfs-fragmentation = pkgs.callPackage ./fragmentation {};
       txg-watcher = pkgs.callPackage ./txg-watcher {};
       zfs-util = pkgs.stdenv.mkDerivation {
