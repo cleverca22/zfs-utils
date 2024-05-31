@@ -17,6 +17,8 @@ uint64_t total = 0;
 bool do_defrag = false;
 int firstdev = 0;
 
+uint64_t min_lost = 1 << 20;
+
 void degang(int fd, uint64_t blksize, uint64_t size) {
   void *buffer = malloc(blksize);
   for (uint64_t i = 0; i < size; i += blksize) {
@@ -65,7 +67,7 @@ void recurse(DIR *hnd, const char *name) {
       if ((statbuf.st_blocks * 512) > statbuf.st_size) {
         //printf("inode %ld, sizes: %ld %ld\n", statbuf.st_ino, statbuf.st_size, statbuf.st_blocks * 512);
         uint64_t overhead = (statbuf.st_blocks * 512) - statbuf.st_size;
-        if (overhead > (1 << 20)) {
+        if (overhead > min_lost) {
           printf("%ldMb %ldKb 2^%d %d %s\n", overhead/1024/1024, statbuf.st_blksize>>10, (int)log2(statbuf.st_blksize), fd, buffer);
           total += overhead;
           if (do_defrag) {
@@ -87,13 +89,16 @@ int main(int argc, char** argv) {
   int opt;
   const char *path = NULL;
 
-  while ((opt = getopt(argc, argv, "p:d")) != -1) {
+  while ((opt = getopt(argc, argv, "p:dm:")) != -1) {
     switch (opt) {
     case 'p':
       path = optarg;
       break;
     case 'd':
       do_defrag = true;
+      break;
+    case 'm':
+      min_lost = atoi(optarg) << 20;
       break;
     }
   }
