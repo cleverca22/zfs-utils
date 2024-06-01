@@ -4,8 +4,6 @@ CXXFLAGS=-Wall -g
 
 zfs-util: zfs-util.cpp
 
-dbgmsg-tail: dbgmsg-tail.cpp
-
-install: zfs-util dbgmsg-tail
+install: zfs-util
 	mkdir -pv ${out}/bin
-	cp zfs-util dbgmsg-tail ${out}/bin/
+	cp zfs-util ${out}/bin/
