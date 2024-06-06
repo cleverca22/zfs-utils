@@ -46,7 +46,7 @@ static void scan_class(const string dir, const string pool, const string metacla
   while (!fh.eof()) {
     uint64_t bits, count;
     if (fh >> bits >> count) {
-      buffer[bits] = count * (1 << bits);
+      buffer[bits] = count * (1ULL << bits);
       if ((histogram[bits] != count) || count) {
         fprintf(out,"zfs_fragmentation_%s{pool=\"%s\",power=\"%ld\"} %ld\n", metaclass.c_str(), pool.c_str(), bits, count);
         //fprintf(out,"zfs_fragmentation2_%s{pool=\"%s\",le=\"%09ld\"} %ld\n", metaclass.c_str(), pool.c_str(), 1 << bits, count);
@@ -54,7 +54,7 @@ static void scan_class(const string dir, const string pool, const string metacla
       }
     }
   }
-  for (int i=12; i<64; i++) {
+  for (uint64_t i=12; i<64; i++) {
     uint64_t total = 0;
     for (int j=i; j<64; j++) {
       total += buffer[j];
