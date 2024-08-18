@@ -37,6 +37,7 @@ static void scan_class(const string dir, const string pool, const string metacla
   string path = dir + "fragmentation_" + metaclass;
   fstream fh(path, fh.in);
   if (!fh.is_open()) {
+    perror("cant open\n"); // , path.c_str());
     exit(2);
   }
 
@@ -47,11 +48,11 @@ static void scan_class(const string dir, const string pool, const string metacla
     uint64_t bits, count;
     if (fh >> bits >> count) {
       buffer[bits] = count * (1ULL << bits);
-      if ((histogram[bits] != count) || count) {
+      //if ((histogram[bits] != count) || count) {
         fprintf(out,"zfs_fragmentation_%s{pool=\"%s\",power=\"%ld\"} %ld\n", metaclass.c_str(), pool.c_str(), bits, count);
         //fprintf(out,"zfs_fragmentation2_%s{pool=\"%s\",le=\"%09ld\"} %ld\n", metaclass.c_str(), pool.c_str(), 1 << bits, count);
         histogram[bits] = count;
-      }
+      //}
     }
   }
   for (uint64_t i=12; i<64; i++) {
