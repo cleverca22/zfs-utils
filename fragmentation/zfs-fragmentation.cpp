@@ -63,10 +63,8 @@ static void scan_class(const string dir, const string pool, const string metacla
     }
     if (buffer[i] > 0) start = true;
     if (start) {
-      if (total > 0) {
-        fprintf(out,"zfs_fragmentation_%s_bytes{pool=\"%s\",power=\"%ld\"} %ld\n", metaclass.c_str(), pool.c_str(), i, total);
-      }
-      if (buffer[i] > 0) fprintf(out,"zfs_fragmentation_%s_bytes_single{pool=\"%s\",power=\"%ld\"} %ld\n", metaclass.c_str(), pool.c_str(), i, buffer[i]);
+      fprintf(out,"zfs_fragmentation_%s_bytes{pool=\"%s\",power=\"%ld\"} %ld\n", metaclass.c_str(), pool.c_str(), i, total);
+      fprintf(out,"zfs_fragmentation_%s_bytes_single{pool=\"%s\",power=\"%ld\"} %ld\n", metaclass.c_str(), pool.c_str(), i, buffer[i]);
     }
   }
 }
