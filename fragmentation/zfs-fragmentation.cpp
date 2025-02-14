@@ -56,7 +56,7 @@ static void scan_class(const string dir, const string pool, const string metacla
     }
   }
   bool start = false;
-  for (uint64_t i=12; i<32; i++) {
+  for (uint64_t i=12; i<34; i++) {
     uint64_t total = 0;
     for (int j=i; j<64; j++) {
       total += buffer[j];
