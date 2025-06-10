@@ -67,7 +67,7 @@ void recurse(DIR *hnd, const char *name) {
       if ((statbuf.st_blocks * 512) > statbuf.st_size) {
         //printf("inode %ld, sizes: %ld %ld\n", statbuf.st_ino, statbuf.st_size, statbuf.st_blocks * 512);
         uint64_t overhead = (statbuf.st_blocks * 512) - statbuf.st_size;
-        if (overhead > min_lost) {
+        if (min_lost < overhead) {
           printf("%ldMb %ldKb 2^%d %s\n", overhead/1024/1024, statbuf.st_blksize>>10, (int)log2(statbuf.st_blksize), buffer);
           total += overhead;
           if (do_defrag) {
@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
   int opt;
   const char *path = ".";
 
-  while ((opt = getopt(argc, argv, "p:dm:")) != -1) {
+  while ((opt = getopt(argc, argv, "p:d?hm:")) != -1) {
     switch (opt) {
     case 'p':
       path = optarg;
@@ -100,6 +100,14 @@ int main(int argc, char** argv) {
     case 'm':
       min_lost = atoi(optarg) << 20;
       break;
+    case '?':
+    case 'h':
+      printf("Usage: gang-finder [-p path] [-d] [-m N]\n\n");
+      printf("Options:\n");
+      printf(" -p PATH  report files under PATH instead of .\n");
+      printf(" -d       rewrite reported files\n");
+      printf(" -m N     ignore files with less than N Mb of overhead\n");
+      exit(0);
     }
   }
   assert(path);
