@@ -35,7 +35,7 @@ static std::list<std::string> find_pools() {
 }
 
 static void scan_class(const string dir, const string pool, const string metaclass, uint64_t *histogram, FILE *out) {
-  string path = dir + "class_" + metaclass + "_histogram";
+  string path = dir + "class_" + metaclass + "_free_histogram";
   fstream fh(path, fh.in);
   if (!fh.is_open()) {
     perror("cant open\n"); // , path.c_str());
