@@ -41,8 +41,8 @@ static void scan_class(const string dir, const string pool, const string metacla
     perror("cant open\n"); // , path.c_str());
     exit(2);
   }
-  char *header;
-  fh >> header;
+  string line;
+  std::getline(fh, line);
 
   uint64_t buffer[64];
   for (int i=0; i<64; i++) buffer[i] = 0;
