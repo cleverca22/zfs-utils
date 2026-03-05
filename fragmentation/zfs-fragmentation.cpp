@@ -17,6 +17,7 @@ uint64_t elog[64];
 uint64_t dedicated_log[64];
 uint64_t normal[64];
 uint64_t special[64];
+uint64_t special_elog[64];
 
 static std::list<std::string> find_pools() {
   std::list<std::string> pools;
@@ -34,12 +35,14 @@ static std::list<std::string> find_pools() {
 }
 
 static void scan_class(const string dir, const string pool, const string metaclass, uint64_t *histogram, FILE *out) {
-  string path = dir + "fragmentation_" + metaclass;
+  string path = dir + "class_" + metaclass + "_histogram";
   fstream fh(path, fh.in);
   if (!fh.is_open()) {
     perror("cant open\n"); // , path.c_str());
     exit(2);
   }
+  char *header;
+  fh >> header;
 
   uint64_t buffer[64];
   for (int i=0; i<64; i++) buffer[i] = 0;
@@ -74,9 +77,10 @@ static void do_scan(FILE *out) {
   for (auto &&pool : pools) {
     string dir = "/proc/spl/kstat/zfs/" + pool + "/";
     scan_class(dir, pool, "dedup", (uint64_t*)&dedup, out);
-    scan_class(dir, pool, "embedded_log", (uint64_t*)&elog, out);
+    scan_class(dir, pool, "elog", (uint64_t*)&elog, out);
     scan_class(dir, pool, "log", (uint64_t*)&dedicated_log, out);
     scan_class(dir, pool, "normal", (uint64_t*)&normal, out);
+    scan_class(dir, pool, "special_elog", (uint64_t*)&special_elog, out);
     scan_class(dir, pool, "special", (uint64_t*)&special, out);
   }
 }
