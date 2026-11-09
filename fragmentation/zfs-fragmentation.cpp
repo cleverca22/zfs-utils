@@ -43,6 +43,7 @@ static void scan_class(const string dir, const string pool, const string metacla
   }
   string line;
   std::getline(fh, line);
+  std::getline(fh, line);
 
   uint64_t buffer[64];
   for (int i=0; i<64; i++) buffer[i] = 0;
